@@ -1,6 +1,6 @@
 <?php
 namespace raiz;
-//error_reporting(E_ALL ^ E_DEPRECATED);
+error_reporting(E_ALL ^ E_DEPRECATED);
 
 
 use Slim\Views\PhpRenderer;
@@ -25,7 +25,7 @@ $app->get('/healthcheck/', function ($request, $response, $args)  use ($app )   
 }  );
 
 
-$app->get('/Tournaments/', function ($request, $response, $args)  use ($app )   {
+$app->get('/Tournaments/{idtorneio:[0-9]+}/', function ($request, $response, $args)  use ($app )   {  // TEST UNIT
     require_once("include/class_championship.php");
 
     $cChampionship = new Championship();
@@ -33,15 +33,7 @@ $app->get('/Tournaments/', function ($request, $response, $args)  use ($app )   
 
     return $retorno;
 }  );
-$app->get('/Tournaments/{idtorneio:[0-9]+}/', function ($request, $response, $args)  use ($app )   {
-    require_once("include/class_championship.php");
-
-    $cChampionship = new Championship();
-    $retorno = $cChampionship->getChampionships($request, $response, $args , null);
-
-    return $retorno;
-}  );
-$app->put('/Tournaments/{idtorneio:[0-9]+}/', function ($request, $response, $args)  use ($app )   {
+$app->put('/Tournaments/{idtorneio:[0-9]+}/', function ($request, $response, $args)  use ($app )   {  // TEST UNIT
     require_once("include/class_championship.php");
 
     $cChampionship = new Championship();
@@ -49,7 +41,19 @@ $app->put('/Tournaments/{idtorneio:[0-9]+}/', function ($request, $response, $ar
 
     return $retorno;
 }  );
-$app->post('/Tournaments/', function ($request, $response, $args)  use ($app )   {
+
+
+
+$app->get('/Tournaments/', function ($request, $response, $args)  use ($app )   {  // TEST UNIT
+    require_once("include/class_championship.php");
+
+    $cChampionship = new Championship();
+    $retorno = $cChampionship->getChampionships($request, $response, $args , null);
+
+    return $retorno;
+}  );
+
+$app->post('/Tournaments/', function ($request, $response, $args)  use ($app )   {  // TEST UNIT
     require_once("include/class_championship.php");
 
     $cChampionship = new Championship();
@@ -58,7 +62,17 @@ $app->post('/Tournaments/', function ($request, $response, $args)  use ($app )  
     return $retorno;
 }  );
 
-$app->get('/Tournaments/{idtorneio:[0-9]+}/Etapas/', function ($request, $response, $args)  use ($app )   {
+
+$app->any('/Tournaments/Etapas/', function ($request, $response, $args)  use ($app )   { // TEST UNIT
+    require_once("include/class_events.php");
+
+    $cEvents = new Events();
+    $retorno = $cEvents->getEvents($request, $response, $args  , $request->getParsedBody()  );
+
+    return $retorno;
+}  );
+
+$app->get('/Tournaments/{idtorneio:[0-9]+}/Etapas/', function ($request, $response, $args)  use ($app )   { // TEST UNIT
     require_once("include/class_events.php");
 
     $cEvents = new Events();
@@ -66,7 +80,7 @@ $app->get('/Tournaments/{idtorneio:[0-9]+}/Etapas/', function ($request, $respon
 
     return $retorno;
 }  );
-$app->post('/Tournaments/{idtorneio:[0-9]+}/Etapas/', function ($request, $response, $args)  use ($app )   {
+$app->post('/Tournaments/{idtorneio:[0-9]+}/Etapas/', function ($request, $response, $args)  use ($app )   {// TEST UNIT
     require_once("include/class_events.php");
 
     $cEvents = new Events();
@@ -74,7 +88,7 @@ $app->post('/Tournaments/{idtorneio:[0-9]+}/Etapas/', function ($request, $respo
 
     return $retorno;
 }  );
-$app->get('/Tournaments/{idtorneio:[0-9]+}/Etapas/{idevento:[0-9]+}/', function ($request, $response, $args)  use ($app )   {
+$app->get('/Tournaments/{idtorneio:[0-9]+}/Etapas/{idevento:[0-9]+}/', function ($request, $response, $args)  use ($app )   { // TEST UNIT
     require_once("include/class_events.php");
 
     $cEvents = new Events();
@@ -82,7 +96,7 @@ $app->get('/Tournaments/{idtorneio:[0-9]+}/Etapas/{idevento:[0-9]+}/', function 
 
     return $retorno;
 }  );
-$app->put('/Tournaments/{idtorneio:[0-9]+}/Etapas/{idevento:[0-9]+}/', function ($request, $response, $args)  use ($app )   {
+$app->put('/Tournaments/{idtorneio:[0-9]+}/Etapas/{idevento:[0-9]+}/', function ($request, $response, $args)  use ($app )   { // TEST UNIT
     require_once("include/class_events.php");
 
     $cEvents = new Events();
@@ -91,13 +105,6 @@ $app->put('/Tournaments/{idtorneio:[0-9]+}/Etapas/{idevento:[0-9]+}/', function 
     return $retorno;
 }  );
 
-$app->any('/Tournaments/Etapas/', function ($request, $response, $args)  use ($app )   {
-    require_once("include/class_events.php");
 
-    $cEvents = new Events();
-    $retorno = $cEvents->getEvents($request, $response, $args  , $request->getParsedBody()  );
-
-    return $retorno;
-}  );
 $app->run();
 

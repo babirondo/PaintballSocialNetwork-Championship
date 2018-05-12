@@ -46,6 +46,22 @@ class Globais{
 
         }
 
+        //ROTAS de CAMPEONATO
+        $this->Campeonatos =                    $servidor."/PaintballSocialNetwork-Championship/Tournaments/";
+        $this->NovoCampeonato =                 $servidor."/PaintballSocialNetwork-Championship/Tournaments/";
+
+        $this->getCampeonato =                  $servidor."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/";
+        $this->NovoCampeonatoAlterar =          $servidor."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/";
+
+        $this->CampeonatoEtapas =               $servidor."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/Etapas/";
+        $this->NovaEtapa =                      $servidor."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/Etapas/";
+
+        $this->getEtapa =                       $servidor."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/Etapas/:idetapa/";
+        $this->AlterarEtapa =                   $servidor."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/Etapas/:idetapa/";
+
+        $this->getCampeonatosEventos =          $servidor."/PaintballSocialNetwork-Championship/Tournaments/Etapas/"; // TEST UNIT
+        $this->getEventos =                     $servidor."/PaintballSocialNetwork-Championship/Tournaments/Etapas/"; // TEST UNIT
+
     }
 
 }

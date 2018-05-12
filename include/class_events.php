@@ -143,7 +143,7 @@ class Events{
         else {
 
             // nao encontrado
-            $data =    array(	"resultado" =>  "ERRO",
+            $data =    array(	"resultado" =>  "SUCESSO",
                 "erro" => "No Event has been registered for this Championship");
 
             return $response->withStatus(200)
