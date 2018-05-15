@@ -30,6 +30,7 @@ $app->get('/Tournaments/{idtorneio:[0-9]+}/', function ($request, $response, $ar
 
     $cChampionship = new Championship();
     $retorno = $cChampionship->getChampionships($request, $response, $args , null);
+    //$retorno = $cChampionship->getChampionshipsElastic($request, $response, $args , null);
 
     return $retorno;
 }  );
@@ -45,16 +46,17 @@ $app->put('/Tournaments/{idtorneio:[0-9]+}/', function ($request, $response, $ar
 
 
 $app->get('/Tournaments/', function ($request, $response, $args)  use ($app )   {  // TEST UNIT
-    require_once("include/class_championship.php");
+    require_once("include/class_championship.php");                              // TEM ROTA
 
     $cChampionship = new Championship();
-    $retorno = $cChampionship->getChampionships($request, $response, $args , null);
+//    $retorno = $cChampionship->getChampionships($request, $response, $args , null);
+    $retorno = $cChampionship->getChampionshipsElastic($request, $response, $args , null);
 
     return $retorno;
 }  );
 
 $app->post('/Tournaments/', function ($request, $response, $args)  use ($app )   {  // TEST UNIT
-    require_once("include/class_championship.php");
+    require_once("include/class_championship.php");                             // TEM ROTA
 
     $cChampionship = new Championship();
     $retorno = $cChampionship->CreateChampionships($request, $response, $args , $request->getParsedBody() );

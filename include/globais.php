@@ -46,6 +46,10 @@ class Globais{
 
         }
 
+        $this->Championship["Index"] = "championship";
+        $this->Championship["Type"] = "mytype";
+        $this->Championship["Id"] = "id";
+
         //ROTAS de CAMPEONATO
         $this->Campeonatos =                    $servidor."/PaintballSocialNetwork-Championship/Tournaments/";
         $this->NovoCampeonato =                 $servidor."/PaintballSocialNetwork-Championship/Tournaments/";
