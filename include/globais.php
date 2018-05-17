@@ -50,6 +50,12 @@ class Globais{
         $this->Championship["Type"] = "mytype";
         $this->Championship["Id"] = "id";
 
+
+        $this->Campeonatos =                    $servidor."/PaintballSocialNetwork-Championship/Tournaments/";
+
+
+        $this->LogoutUI =                       $servidor."/PaintballSocialNetwork/Logout/";
+
         //ROTAS de CAMPEONATO
         $this->Campeonatos =                    $servidor."/PaintballSocialNetwork-Championship/Tournaments/";
         $this->NovoCampeonato =                 $servidor."/PaintballSocialNetwork-Championship/Tournaments/";
@@ -66,6 +72,18 @@ class Globais{
         $this->getCampeonatosEventos =          $servidor."/PaintballSocialNetwork-Championship/Tournaments/Etapas/"; // TEST UNIT
         $this->getEventos =                     $servidor."/PaintballSocialNetwork-Championship/Tournaments/Etapas/"; // TEST UNIT
 
+    }
+    Function ArrayMergeKeepKeys() {
+        $arg_list = func_get_args();
+        foreach((array)$arg_list as $arg){
+            if (is_array ($arg) )
+            {
+                foreach((array)$arg as $K => $V){
+                    $Zoo[$K]=$V;
+                }
+            }
+        }
+        return $Zoo;
     }
 
 }

@@ -8,11 +8,10 @@ use Slim\Views\PhpRenderer;
 include "vendor/autoload.php";
 
 
-$app = new \Slim\App(['settings' => ['displayErrorDetails' => true]]);
+$app = new \Slim\App(['settings' => ['displayErrorDetails' => true] ,  'determineRouteBeforeAppMiddleware' => true    ] );
 
 $container = $app->getContainer();
 $container['renderer'] = new PhpRenderer("./templates");
-
 
 
 $app->get('/healthcheck/', function ($request, $response, $args)  use ($app )   {
@@ -25,88 +24,97 @@ $app->get('/healthcheck/', function ($request, $response, $args)  use ($app )   
 }  );
 
 
-$app->get('/Tournaments/{idtorneio:[0-9]+}/', function ($request, $response, $args)  use ($app )   {  // TEST UNIT
+//estaticos
+$app->any('/Tournaments/Etapas/', function ($request, $response, $args) use ($app) { // TEST UNIT
+    require_once("include/class_events.php");
+
+    $cEvents = new Events();
+    $retorno = $cEvents->getEvents($request, $response, $args, $request->getParsedBody());
+
+    return $retorno;
+});
+
+
+$app->get('/Tournaments/', function ($request, $response, $args) use ($app) {  // TEST UNIT
     require_once("include/class_championship.php");
 
     $cChampionship = new Championship();
-    $retorno = $cChampionship->getChampionships($request, $response, $args , null);
-    //$retorno = $cChampionship->getChampionshipsElastic($request, $response, $args , null);
+    //$retorno = $cChampionship->getChampionships($request, $response, $args, null);
+    $retorno = $cChampionship->getChampionshipsElastic($request, $response, $args,  $request->getParsedBody());
+
 
     return $retorno;
-}  );
-$app->put('/Tournaments/{idtorneio:[0-9]+}/', function ($request, $response, $args)  use ($app )   {  // TEST UNIT
-    require_once("include/class_championship.php");
-
-    $cChampionship = new Championship();
-    $retorno = $cChampionship->AlterarChampionship($request, $response, $args ,  $request->getParsedBody() );
-
-    return $retorno;
-}  );
-
-
-
-$app->get('/Tournaments/', function ($request, $response, $args)  use ($app )   {  // TEST UNIT
-    require_once("include/class_championship.php");                              // TEM ROTA
-
-    $cChampionship = new Championship();
-//    $retorno = $cChampionship->getChampionships($request, $response, $args , null);
-    $retorno = $cChampionship->getChampionshipsElastic($request, $response, $args , null);
-
-    return $retorno;
-}  );
-
-$app->post('/Tournaments/', function ($request, $response, $args)  use ($app )   {  // TEST UNIT
+});
+$app->post('/Tournaments/', function ($request, $response, $args) use ($app) {  // TEST UNIT
     require_once("include/class_championship.php");                             // TEM ROTA
 
     $cChampionship = new Championship();
-    $retorno = $cChampionship->CreateChampionships($request, $response, $args , $request->getParsedBody() );
+    $retorno = $cChampionship->CreateChampionships($request, $response, $args, $request->getParsedBody());
 
     return $retorno;
-}  );
+});
 
 
-$app->any('/Tournaments/Etapas/', function ($request, $response, $args)  use ($app )   { // TEST UNIT
+
+//dinamicos
+$app->get('/Tournaments/{idtorneio:[0-9]+}/Etapas/', function ($request, $response, $args) use ($app) { // TEST UNIT
     require_once("include/class_events.php");
 
     $cEvents = new Events();
-    $retorno = $cEvents->getEvents($request, $response, $args  , $request->getParsedBody()  );
+    $retorno = $cEvents->getEvents($request, $response, $args, null);
 
     return $retorno;
-}  );
-
-$app->get('/Tournaments/{idtorneio:[0-9]+}/Etapas/', function ($request, $response, $args)  use ($app )   { // TEST UNIT
+});
+$app->post('/Tournaments/{idtorneio:[0-9]+}/Etapas/', function ($request, $response, $args) use ($app) {// TEST UNIT
     require_once("include/class_events.php");
 
     $cEvents = new Events();
-    $retorno = $cEvents->getEvents($request, $response, $args , null);
+    $retorno = $cEvents->CriarEvento($request, $response, $args, $request->getParsedBody());
 
     return $retorno;
-}  );
-$app->post('/Tournaments/{idtorneio:[0-9]+}/Etapas/', function ($request, $response, $args)  use ($app )   {// TEST UNIT
+});
+$app->get('/Tournaments/{idtorneio:[0-9]+}/Etapas/{idevento:[0-9]+}/', function ($request, $response, $args) use ($app) { // TEST UNIT
     require_once("include/class_events.php");
 
     $cEvents = new Events();
-    $retorno = $cEvents->CriarEvento($request, $response, $args , $request->getParsedBody() );
+    $retorno = $cEvents->getEvents($request, $response, $args, $request->getParsedBody());
 
     return $retorno;
-}  );
-$app->get('/Tournaments/{idtorneio:[0-9]+}/Etapas/{idevento:[0-9]+}/', function ($request, $response, $args)  use ($app )   { // TEST UNIT
+});
+$app->put('/Tournaments/{idtorneio:[0-9]+}/Etapas/{idevento:[0-9]+}/', function ($request, $response, $args) use ($app) { // TEST UNIT
     require_once("include/class_events.php");
 
     $cEvents = new Events();
-    $retorno = $cEvents->getEvents($request, $response, $args , $request->getParsedBody() );
+    $retorno = $cEvents->AlterarEvento($request, $response, $args, $request->getParsedBody());
 
     return $retorno;
-}  );
-$app->put('/Tournaments/{idtorneio:[0-9]+}/Etapas/{idevento:[0-9]+}/', function ($request, $response, $args)  use ($app )   { // TEST UNIT
-    require_once("include/class_events.php");
+});
+$app->delete('/Tournaments/{idtorneio}/', function ($request, $response, $args) use ($app) {  // TEST UNIT
+    require_once("include/class_championship.php");                              // TEM ROTA
 
-    $cEvents = new Events();
-    $retorno = $cEvents->AlterarEvento($request, $response, $args , $request->getParsedBody() );
+    $cChampionship = new Championship();
+    //    $retorno = $cChampionship->getChampionships($request, $response, $args , null);
+    $retorno = $cChampionship->DeleteChampionshipsElastic($request, $response, $args,  $request->getParsedBody());
 
     return $retorno;
-}  );
+});
+$app->put('/Tournaments/{idtorneio}/', function ($request, $response, $args) use ($app) {  // TEST UNIT
+    require_once("include/class_championship.php");
 
+    $cChampionship = new Championship();
+    $retorno = $cChampionship->AlterarChampionship($request, $response, $args, $request->getParsedBody());
+
+    return $retorno;
+});
+$app->get('/Tournaments/{idtorneio}/', function ($request, $response, $args) use ($app) {  // TEST UNIT
+    require_once("include/class_championship.php");                              // TEM ROTA
+
+    $cChampionship = new Championship();
+    //    $retorno = $cChampionship->getChampionships($request, $response, $args , null);
+    $retorno = $cChampionship->getChampionshipsElastic($request, $response, $args,  $request->getParsedBody());
+
+    return $retorno;
+});
 
 $app->run();
 
