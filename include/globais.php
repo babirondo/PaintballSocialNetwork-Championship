@@ -46,8 +46,8 @@ class Globais{
 
         }
 
-        $this->Championship["Index"] = "championship";
-        $this->Championship["Type"] = "mytype";
+        $this->Championship["Index"] = "championship2";
+        $this->Championship["Type"]["campeonato"] = "campeonatos";
         $this->Championship["Id"] = "id";
 
 

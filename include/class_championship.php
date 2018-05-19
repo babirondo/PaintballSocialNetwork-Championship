@@ -1,6 +1,6 @@
 <?php
 namespace raiz;
-use Elasticsearch\ClientBuilder;
+use Elasticsearch\ClientBuilder,MongoDB;
 set_time_limit( 2 );
 
 class Championship{
@@ -10,6 +10,10 @@ class Championship{
         require("include/class_db.php");
         $this->con = new db();
         $this->con->conecta();
+
+        $this->Mongo = new db();
+        $this->Mongo  = $this->Mongo->conecta("Mongo");
+
 
         require_once("include/globais.php");
         $this->Globais = new Globais();
@@ -37,11 +41,27 @@ class Championship{
                 ->withHeader('Content-type', 'application/json;charset=utf-8')
                 ->withJson($data);
         }
+        $bd = $this->Globais->Championship["Index"];
+        $table = $this->Globais->Championship["Type"]["campeonato"];
 
+        $conectadoTabela = $this->Mongo->$bd->$table;
+        //var_dump(  $conectadoTabela );exit;
+        $filter = array( "_id" =>  new MongoDB\BSON\ObjectID( $args["idtorneio"] )     );
+        $options = array( 'upsert' => true, 'multi' => false ); //
+        $param =   array(  '$set' => $jsonRAW );
+
+
+        $resultMongo = $conectadoTabela->updateOne($filter, $param, $options) ;
+
+        $data =   array(	"resultado" =>  "SUCESSO" );
+        return $response->withJson($data, 200)->withHeader('Content-Type', 'application/json');
+
+
+        /*
         //var_dump($jsonRAW); exit;
         // salvando no elasticsearch
         $params["index"] = $this->Globais->Championship["Index"];
-        $params["type"] = $this->Globais->Championship["Type"];
+        $params["type"] = $this->Globais->Championship["Type"]["campeonato"];
         $params["id"] = $args["idtorneio"];
         $params["body"]["doc"] = $jsonRAW;
         $params["body"]["upsert"]["counter"] = 1;
@@ -62,7 +82,6 @@ class Championship{
             return $response->withJson($data, 200)->withHeader('Content-Type', 'application/json');
         }
         else {
-
             // nao encontrado
             $data =    array(	"resultado" =>  "ERRO",
                 "erro" => "Impossible to edit Championship - $mensagem_retorno");
@@ -70,10 +89,8 @@ class Championship{
             return $response->withStatus(200)
                 ->withHeader('Content-type', 'application/json;charset=utf-8')
                 ->withJson($data);
-
-
-
         }
+        */
 
     }
 
@@ -88,10 +105,28 @@ class Championship{
                 ->withJson($data);
         }
 
+
+
+        $bd = $this->Globais->Championship["Index"];
+        $table = $this->Globais->Championship["Type"]["campeonato"];
+
+        $conectadoTabela = $this->Mongo->$bd->$table;
+        //var_dump(  $conectadoTabela );exit;
+
+        $resultMongo = $conectadoTabela->deleteOne   (
+            array("_id" => new MongoDB\BSON\ObjectID( $args["idtorneio"] ) )
+
+        );
+
+        $data =   array(	"resultado" =>  "SUCESSO" );
+
+        return $response->withJson($data, 200)->withHeader('Content-Type', 'application/json');
+
+/*
         //var_dump($jsonRAW); exit;
         // salvando no elasticsearch
         $params["index"] = $this->Globais->Championship["Index"];
-        $params["type"] = $this->Globais->Championship["Type"];
+        $params["type"] = $this->Globais->Championship["Type"]["campeonato"];
         $params["id"] = $args["idtorneio"];
 
 
@@ -121,6 +156,7 @@ class Championship{
 
 
         }
+        */
 
     }
 
@@ -144,24 +180,42 @@ class Championship{
                 ->withJson($data);
         }
 
+
+
+// salvando no MongoDB
+
+        $bd = $this->Globais->Championship["Index"];
+        $table = $this->Globais->Championship["Type"]["campeonato"];
+
+        $conectadoTabela = $this->Mongo->$bd->$table;
+
+        $resultMongo = $conectadoTabela->insertOne( $jsonRAW );
+        //var_dump(  $resultMongo );exit;
+
+        $idMongo = $resultMongo->getInsertedId();
+
+
+        $data["msg"] = "Inserted with Object ID '{$idMongo}'";
+
         //var_dump($jsonRAW); exit;
-        // salvando no elasticsearch
+// salvando no elasticsearch
         $params = [
             'index' => $this->Globais->Championship["Index"],
-            'type' => $this->Globais->Championship["Type"],
-
+            'type' => $this->Globais->Championship["Type"]["campeonato"],
+            'id' => $idMongo,
             'body' => $jsonRAW
         ];
         $respostaElasticSearch = $this->ElasticSearch->index($params);
        // var_dump($respostaElasticSearch); exit;
 
-        $sql = "INSERT INTO championship (championship, sigla)
-                VALUES('".$jsonRAW['championship']."',  '".$jsonRAW["sigla"]."')";
+// salvando no Postgresql
+        $sql = "INSERT INTO championship (id, championship, sigla)
+                VALUES('$idMongo','".$jsonRAW['championship']."',  '".$jsonRAW["sigla"]."')";
         $this->con->executa($sql);
 
         if ( $this->con->res == 1 ){
 
-            $data =   array(	"resultado" =>  "SUCESSO" );
+            $data["resultado"] = "SUCESSO" ;
             return $response->withJson($data, 200)->withHeader('Content-Type', 'application/json');
         }
         else {
@@ -229,6 +283,7 @@ class Championship{
     }
     function getChampionshipsElastic (  $request, $response, $args, $jsonRAW ){
 
+
         if (!$this->con->conectado){
             $data =   array(	"resultado" =>  "ERRO",
                 "erro" => "nao conectado - ".$this->con->erro );
@@ -240,28 +295,40 @@ class Championship{
         $params = array();
         if (is_array($filtros)){
             $params["index"] =  $this->Globais->Championship["Index"];
-            $params["type"] =  $this->Globais->Championship["Type"];
+            $params["type"] =  $this->Globais->Championship["Type"]["campeonato"];
         }
         if ($args["idtorneio"]){
             //$filtros["query"]["terms"]["_id"] = $jsonRAW["idtorneio"];
             //$filtros["_source"] = false;
-            $filtros["body"]["query"]["match"]["_id"] = $args["idtorneio"];
+            $filtros["_id"]  =   new MongoDB\BSON\ObjectID( $args["idtorneio"] )  ;
         }
 
 
 
 
-        //$filtros = null;
+//  MongoDB
+
+        $bd = $this->Globais->Championship["Index"];
+        $table = $this->Globais->Championship["Type"]["campeonato"];
+
+        $conectadoTabela = $this->Mongo->$bd->$table;
+//        var_dump(  $filtros );exit;
+
+        $resultMongo = $conectadoTabela->find( $filtros )  ;
+        $data["hits"] = iterator_to_array($resultMongo);
+        $data["resultado"] = "SUCESSO";
+
+        /*
 
         $params = $this->Globais->ArrayMergeKeepKeys($params,$filtros);
         //var_dump($params); exit;
 
         $respostaElasticSearch = $this->ElasticSearch->search($params);
         //var_dump($respostaElasticSearch); exit;
-
+*/
         return $response->withStatus(200)
             ->withHeader('Content-type', 'application/json;charset=utf-8')
-            ->withJson($respostaElasticSearch);
+            ->withJson($data);
        /*
           $sql = "SELECT *
                 FROM championship cha  ".((is_array($filtros))?" WHERE ".implode( " or ",$filtros) :"") ;
