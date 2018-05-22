@@ -235,7 +235,7 @@ class Championship{
     }
 
     function getChampionships (  $request, $response, $args ){
-        die("use elastic serach");
+        die("use Mongo");
 
         if (!$this->con->conectado){
             $data =   array(	"resultado" =>  "ERRO",

@@ -29,7 +29,7 @@ $app->any('/Tournaments/Etapas/', function ($request, $response, $args) use ($ap
     require_once("include/class_events.php");
 
     $cEvents = new Events();
-    $retorno = $cEvents->getEvents($request, $response, $args, $request->getParsedBody());
+    $retorno = $cEvents->getEventsAPI($request, $response, $args, $request->getParsedBody());
 
     return $retorno;
 });
@@ -57,15 +57,15 @@ $app->post('/Tournaments/', function ($request, $response, $args) use ($app) {  
 
 
 //dinamicos
-$app->get('/Tournaments/{idtorneio:[0-9]+}/Etapas/', function ($request, $response, $args) use ($app) { // TEST UNIT
+$app->get('/Tournaments/{idtorneio}/Etapas/', function ($request, $response, $args) use ($app) { // TEST UNIT
     require_once("include/class_events.php");
 
     $cEvents = new Events();
-    $retorno = $cEvents->getEvents($request, $response, $args, null);
+    $retorno = $cEvents->getEventsAPI($request, $response, $args, null);
 
     return $retorno;
 });
-$app->post('/Tournaments/{idtorneio:[0-9]+}/Etapas/', function ($request, $response, $args) use ($app) {// TEST UNIT
+$app->post('/Tournaments/{idtorneio}/Etapas/', function ($request, $response, $args) use ($app) {// TEST UNIT
     require_once("include/class_events.php");
 
     $cEvents = new Events();
@@ -73,15 +73,15 @@ $app->post('/Tournaments/{idtorneio:[0-9]+}/Etapas/', function ($request, $respo
 
     return $retorno;
 });
-$app->get('/Tournaments/{idtorneio:[0-9]+}/Etapas/{idevento:[0-9]+}/', function ($request, $response, $args) use ($app) { // TEST UNIT
+$app->get('/Tournaments/{idtorneio}/Etapas/{idevento}/', function ($request, $response, $args) use ($app) { // TEST UNIT
     require_once("include/class_events.php");
 
     $cEvents = new Events();
-    $retorno = $cEvents->getEvents($request, $response, $args, $request->getParsedBody());
+    $retorno = $cEvents->getEventsAPI($request, $response, $args, $request->getParsedBody());
 
     return $retorno;
 });
-$app->put('/Tournaments/{idtorneio:[0-9]+}/Etapas/{idevento:[0-9]+}/', function ($request, $response, $args) use ($app) { // TEST UNIT
+$app->put('/Tournaments/{idtorneio}/Etapas/{idevento}/', function ($request, $response, $args) use ($app) { // TEST UNIT
     require_once("include/class_events.php");
 
     $cEvents = new Events();
