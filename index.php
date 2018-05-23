@@ -98,6 +98,14 @@ $app->delete('/Tournaments/{idtorneio}/', function ($request, $response, $args) 
 
     return $retorno;
 });
+$app->delete('/Tournaments/{idtorneio}/Etapas/{idevento}/', function ($request, $response, $args) use ($app) {  // TEST UNIT
+    require_once("include/class_events.php");                              // TEM ROTA
+
+    $cEvents = new Events();
+    $retorno = $cEvents->DeleteEvento($request, $response, $args, $request->getParsedBody());
+
+    return $retorno;
+});
 $app->put('/Tournaments/{idtorneio}/', function ($request, $response, $args) use ($app) {  // TEST UNIT
     require_once("include/class_championship.php");
 

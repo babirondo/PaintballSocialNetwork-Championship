@@ -265,6 +265,51 @@ class Events{
 
     }
 
+
+    function DeleteEvento (  $request, $response, $args , $jsonRAW){
+
+        if (!$this->con->conectado){
+            $data =   array(	"resultado" =>  "ERRO",
+                "erro" => "nao conectado - ".$this->con->erro );
+            return $response->withStatus(500)
+                ->withHeader('Content-type', 'application/json;charset=utf-8')
+                ->withJson($data);
+        }
+        ini_set("xdebug.overload_var_dump", "off");
+
+        $filtros=array();
+        $params = array();
+
+        if ($args["idtorneio"]){
+            $filtros["_id"]  =     new MongoDB\BSON\ObjectID( $args["idtorneio"]  );//
+        }
+        if ($args["idevento"]){
+          //  $filtros ['eventos._id']  =  new MongoDB\BSON\ObjectID(   $args["idevento"]  );//     $args["idevento"] ;
+            $where["eventos"]['_id'] = new MongoDB\BSON\ObjectID(   $args["idevento"]  );
+            //$options["projection"]['eventos.$']  =  true;//
+
+        }
+        $options['$pull'] =  $where;
+
+        $bd = $this->Globais->Championship["Index"];
+        $table = $this->Globais->Championship["Type"]["campeonato"];
+
+        $conectadoTabela = $this->Mongo->$bd->$table;
+
+        if ($args["idevento"]){
+            //$options["projection"]['eventos.$']  =  true;//
+        }
+
+        //var_dump($filtros);var_dump($options);
+        $resultMongo = $conectadoTabela->updateOne ( $filtros,  $options ) ;
+        //var_dump($resultMongo);exit;
+
+        $data =   array(	"resultado" =>  "SUCESSO" );
+        return $response->withJson($data, 200)->withHeader('Content-Type', 'application/json');
+
+
+    }
+
     function getEventsAPI (  $request, $response, $args , $jsonRAW){
 
         if (!$this->con->conectado){
