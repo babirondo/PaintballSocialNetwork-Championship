@@ -9,25 +9,14 @@ class Globais{
 
     function __construct( ){
 
-        if ( $_SERVER["HTTP_HOST"] == "pb.mundivox.rio" || $_SERVER["HOSTNAME"] == "pb.mundivox.rio" )
-            $this->banco = $this->env = "prod";
-        else{
-            $this->banco= "local";
-            $this->env = "local";
-        }
-        switch($this->env){
+        $this->banco = $this->env = "prod";
+        $servidor["UI"] = $servidor["frontend"] = "http://34.247.245.249";
+        $servidor["autenticacao"] = "http://34.242.188.167";
+        $servidor["players"] = "http://54.171.155.88";
+        $servidor["campeonato"] = "http://34.242.140.31";
 
-            case("local");
-                $servidor= "http://localhost:81";
-                $this->verbose=1;
-                break;
+        $this->verbose=1;
 
-            case("prod");
-                $servidor= "http://pb.mundivox.rio";
-                $this->verbose=1;
-                break;
-
-        }
         switch($this->banco){
 
             case("local");
@@ -38,9 +27,9 @@ class Globais{
                 break;
 
             case("prod");
-                $this->localhost = "pb.mundivox.rio";
-                $this->username = "pb";
-                $this->password = "Rodr1gues";
+                $this->localhost = "localhost";
+                $this->username = "postgres";
+                $this->password = "bruno";
                 $this->db ="championship";
                 break;
 
@@ -51,26 +40,26 @@ class Globais{
         $this->Championship["Id"] = "id";
 
 
-        $this->Campeonatos =                    $servidor."/PaintballSocialNetwork-Championship/Tournaments/";
+        $this->Campeonatos =                    $servidor["campeonato"]."/PaintballSocialNetwork-Championship/Tournaments/";
 
 
-        $this->LogoutUI =                       $servidor."/PaintballSocialNetwork/Logout/";
+        $this->LogoutUI =                       $servidor["campeonato"]."/PaintballSocialNetwork/Logout/";
 
         //ROTAS de CAMPEONATO
-        $this->Campeonatos =                    $servidor."/PaintballSocialNetwork-Championship/Tournaments/";
-        $this->NovoCampeonato =                 $servidor."/PaintballSocialNetwork-Championship/Tournaments/";
+        $this->Campeonatos =                    $servidor["campeonato"]."/PaintballSocialNetwork-Championship/Tournaments/";
+        $this->NovoCampeonato =                 $servidor["campeonato"]."/PaintballSocialNetwork-Championship/Tournaments/";
 
-        $this->getCampeonato =                  $servidor."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/";
-        $this->NovoCampeonatoAlterar =          $servidor."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/";
+        $this->getCampeonato =                  $servidor["campeonato"]."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/";
+        $this->NovoCampeonatoAlterar =          $servidor["campeonato"]."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/";
 
-        $this->CampeonatoEtapas =               $servidor."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/Etapas/";
-        $this->NovaEtapa =                      $servidor."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/Etapas/";
+        $this->CampeonatoEtapas =               $servidor["campeonato"]."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/Etapas/";
+        $this->NovaEtapa =                      $servidor["campeonato"]."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/Etapas/";
 
-        $this->getEtapa =                       $servidor."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/Etapas/:idetapa/";
-        $this->AlterarEtapa =                   $servidor."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/Etapas/:idetapa/";
+        $this->getEtapa =                       $servidor["campeonato"]."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/Etapas/:idetapa/";
+        $this->AlterarEtapa =                   $servidor["campeonato"]."/PaintballSocialNetwork-Championship/Tournaments/:idtorneio/Etapas/:idetapa/";
 
-        $this->getCampeonatosEventos =          $servidor."/PaintballSocialNetwork-Championship/Tournaments/Etapas/"; // TEST UNIT
-        $this->getEventos =                     $servidor."/PaintballSocialNetwork-Championship/Tournaments/Etapas/"; // TEST UNIT
+        $this->getCampeonatosEventos =          $servidor["campeonato"]."/PaintballSocialNetwork-Championship/Tournaments/Etapas/"; // TEST UNIT
+        $this->getEventos =                     $servidor["campeonato"]."/PaintballSocialNetwork-Championship/Tournaments/Etapas/"; // TEST UNIT
 
     }
     Function ArrayMergeKeepKeys() {
