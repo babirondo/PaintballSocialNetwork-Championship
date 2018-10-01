@@ -1,6 +1,6 @@
 <?php
 namespace raiz;
-use Elasticsearch\ClientBuilder,MongoDB;
+use  MongoDB;
 set_time_limit( 2 );
 
 class Championship{
@@ -18,7 +18,7 @@ class Championship{
         require_once("include/globais.php");
         $this->Globais = new Globais();
 
-        $this->ElasticSearch = ClientBuilder::create()->build();
+        //$this->ElasticSearch = ClientBuilder::create()->build();
 
     }
 
@@ -199,6 +199,7 @@ class Championship{
 
         //var_dump($jsonRAW); exit;
 // salvando no elasticsearch
+/*
         $params = [
             'index' => $this->Globais->Championship["Index"],
             'type' => $this->Globais->Championship["Type"]["campeonato"],
@@ -206,6 +207,7 @@ class Championship{
             'body' => $jsonRAW
         ];
         $respostaElasticSearch = $this->ElasticSearch->index($params);
+        */
        // var_dump($respostaElasticSearch); exit;
 
 // salvando no Postgresql
