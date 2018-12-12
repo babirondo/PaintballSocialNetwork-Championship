@@ -9,7 +9,7 @@ class Championship{
 
         require("include/class_db.php");
         $this->con = new db();
-        $this->con->conecta();
+      //  $this->con->conecta();
 
         $this->Mongo = new db();
         $this->Mongo  = $this->Mongo->conecta("Mongo");
@@ -24,7 +24,7 @@ class Championship{
 
 
     function AlterarChampionship(  $request, $response, $args,   $jsonRAW){
-
+      /*
         if (!$this->con->conectado){
             $data =   array(	"resultado" =>  "ERRO",
                 "erro" => "nao conectado - ".$this->con->erro );
@@ -32,6 +32,7 @@ class Championship{
                 ->withHeader('Content-type', 'application/json;charset=utf-8')
                 ->withJson($data);
         }
+        */
 
         IF (!is_array ($jsonRAW)  ) {
             $data =  array(	"resultado" =>  "ERRO",
@@ -96,7 +97,7 @@ class Championship{
 
 
     function DeleteChampionshipsElastic(  $request, $response, $args,   $jsonRAW){
-
+      /*
         if (!$this->con->conectado){
             $data =   array(	"resultado" =>  "ERRO",
                 "erro" => "nao conectado - ".$this->con->erro );
@@ -104,6 +105,7 @@ class Championship{
                 ->withHeader('Content-type', 'application/json;charset=utf-8')
                 ->withJson($data);
         }
+        */
 
 
 
@@ -163,6 +165,7 @@ class Championship{
 
     function CreateChampionships(  $request, $response, $args,   $jsonRAW){
 
+        /*
         if (!$this->con->conectado){
             $data =   array(	"resultado" =>  "ERRO",
                 "erro" => "nao conectado - ".$this->con->erro );
@@ -170,6 +173,7 @@ class Championship{
                 ->withHeader('Content-type', 'application/json;charset=utf-8')
                 ->withJson($data);
         }
+        */
 
         IF (!is_array ($jsonRAW)  ) {
             $data =  array(	"resultado" =>  "ERRO",
@@ -211,11 +215,13 @@ class Championship{
        // var_dump($respostaElasticSearch); exit;
 
 // salvando no Postgresql
+        /*
         $sql = "INSERT INTO championship (id, championship, sigla)
                 VALUES('$idMongo','".$jsonRAW['championship']."',  '".$jsonRAW["sigla"]."')";
         $this->con->executa($sql);
+        */
 
-        if ( $this->con->res == 1 ){
+        if ( $idMongo ){
 
             $data["resultado"] = "SUCESSO" ;
             return $response->withJson($data, 200)->withHeader('Content-Type', 'application/json');
@@ -239,6 +245,7 @@ class Championship{
     function getChampionships (  $request, $response, $args ){
         die("use Mongo");
 
+        /*
         if (!$this->con->conectado){
             $data =   array(	"resultado" =>  "ERRO",
                 "erro" => "nao conectado - ".$this->con->erro );
@@ -246,6 +253,7 @@ class Championship{
                 ->withHeader('Content-type', 'application/json;charset=utf-8')
                 ->withJson($data);
         }
+        */
 
         if ($args["idtorneio"]) $filtros[] = " id = '".$args["idtorneio"]."'";
         if ($jsonRAW["nome"]) $filtros[] = " nome ilike '%".$jsonRAW["nome"]."%'";
@@ -285,7 +293,7 @@ class Championship{
     }
     function getChampionshipsElastic (  $request, $response, $args, $jsonRAW ){
 
-
+      /*
         if (!$this->con->conectado){
             $data =   array(	"resultado" =>  "ERRO",
                 "erro" => "nao conectado - ".$this->con->erro );
@@ -293,6 +301,7 @@ class Championship{
                 ->withHeader('Content-type', 'application/json;charset=utf-8')
                 ->withJson($data);
         }
+        */
         $filtros=array();
         $params = array();
         if (is_array($filtros)){

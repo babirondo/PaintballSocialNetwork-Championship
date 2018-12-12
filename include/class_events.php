@@ -5,8 +5,10 @@ set_time_limit( 2 );
 class Events{
     function __construct( ){
         require("include/class_db.php");
+        /*
         $this->con = new db();
         $this->con->conecta();
+        */
 
         $this->Mongo = new db();
         $this->Mongo  = $this->Mongo->conecta("Mongo");
@@ -311,7 +313,7 @@ class Events{
     }
 
     function getEventsAPI (  $request, $response, $args , $jsonRAW){
-
+        /*
         if (!$this->con->conectado){
             $data =   array(	"resultado" =>  "ERRO",
                 "erro" => "nao conectado - ".$this->con->erro );
@@ -319,6 +321,7 @@ class Events{
                 ->withHeader('Content-type', 'application/json;charset=utf-8')
                 ->withJson($data);
         }
+        */
 
         $dados_ja_armazenados = $this->getEvents( $request, $response, $args , $jsonRAW );
         //var_dump($data);exit;
