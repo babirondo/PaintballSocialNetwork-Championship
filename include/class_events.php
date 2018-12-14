@@ -19,6 +19,7 @@ class Events{
 
     function AlterarEvento(  $request, $response, $args,   $jsonRAW){
 
+        /*
         if (!$this->con->conectado){
             $data =   array(	"resultado" =>  "ERRO",
                 "erro" => "nao conectado - ".$this->con->erro );
@@ -26,6 +27,7 @@ class Events{
                 ->withHeader('Content-type', 'application/json;charset=utf-8')
                 ->withJson($data);
         }
+        */
 
         IF (!is_array ($jsonRAW)  ) {
             $data =  array(	"resultado" =>  "ERRO",
@@ -125,7 +127,7 @@ class Events{
 
 
     function CriarEvento(  $request, $response, $args,   $jsonRAW){
-
+        /*
         if (!$this->con->conectado){
             $data =   array(	"resultado" =>  "ERRO",
                 "erro" => "nao conectado - ".$this->con->erro );
@@ -133,6 +135,7 @@ class Events{
                 ->withHeader('Content-type', 'application/json;charset=utf-8')
                 ->withJson($data);
         }
+        */
 
         IF (!is_array ($jsonRAW)  ) {
             $data =  array(	"resultado" =>  "ERRO",
