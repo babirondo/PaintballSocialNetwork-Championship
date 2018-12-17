@@ -5,6 +5,7 @@
     "slim/php-view": "^2.2",
     "guzzlehttp/guzzle": "6.1",
     "mongodb/mongodb": "^1.0.0",
+    "babirondo/classbd": "0.7",
     "elasticsearch/elasticsearch": "~6.0"
   },
   "require-dev": {

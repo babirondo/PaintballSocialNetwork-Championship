@@ -6,27 +6,36 @@ class Globais{
 
     public $env;
     public $banco;
+    public $localhost;
+    public $username ;
+    public $port ;
+    public $password;
+    public $db;
 
     function __construct( ){
 
-        $this->banco = $this->env = "local";
+        $this->env = "local";
+
         $servidor["UI"] = $servidor["frontend"] = "http://192.168.0.150:81";
         $servidor["autenticacao"] = "http://192.168.0.150:82";
         $servidor["campeonato"] = "http://192.168.0.150:84";
         $servidor["players"] = "http://192.168.0.150:83";
 
-
+        $servidor["bancodados_campeonato"] = "192.168.0.150";
+        $servidor["bancodados_players"] = "192.168.0.150";
 
         $this->verbose=1;
 
-        switch($this->banco){
+        switch($this->env){
 
             case("local");
-                $this->localhost = $servidor["campeonato"];
+                $this->banco = "Mongo";
+                $this->localhost = $servidor["bancodados_campeonato"];
                 $this->username = "postgres";
+                $this->port = "27017";
                 $this->password = "postgres";
                 $this->db ="championship_local";
-                break;
+            break;
 
             case("prod");
                 $this->localhost = "localhost";

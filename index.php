@@ -125,4 +125,3 @@ $app->get('/Tournaments/{idtorneio}/', function ($request, $response, $args) use
 });
 
 $app->run();
-

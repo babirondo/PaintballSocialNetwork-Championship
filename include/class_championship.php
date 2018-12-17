@@ -1,25 +1,29 @@
 <?php
 namespace raiz;
 use  MongoDB;
-set_time_limit( 2 );
 
+error_reporting(E_ALL ^ E_NOTICE);
 class Championship{
     function __construct( ){
         include "vendor/autoload.php";
 
-        require("include/class_db.php");
-        $this->con = new db();
-      //  $this->con->conecta();
-
-        $this->Mongo = new db();
-        $this->Mongo  = $this->Mongo->conecta("Mongo");
-
-
         require_once("include/globais.php");
         $this->Globais = new Globais();
 
-        //$this->ElasticSearch = ClientBuilder::create()->build();
+        $this->con = new \babirondo\classbd\db();
 
+
+        //var_dump($this->Globais); exit;
+
+        $this->con->conecta($this->Globais->banco ,
+                              $this->Globais->localhost,
+                              $this->Globais->db,
+                              $this->Globais->username,
+                              $this->Globais->password,
+                              $this->Globais->port);
+
+        $this->con->MongoDB = $this->Globais->Championship["Index"];
+        $this->con->MongoTable = $this->Globais->Championship["Type"]["campeonato"];
     }
 
 
@@ -42,17 +46,17 @@ class Championship{
                 ->withHeader('Content-type', 'application/json;charset=utf-8')
                 ->withJson($data);
         }
-        $bd = $this->Globais->Championship["Index"];
-        $table = $this->Globais->Championship["Type"]["campeonato"];
+//        $bd = $this->Globais->Championship["Index"];
+//        $table = $this->Globais->Championship["Type"]["campeonato"];
 
-        $conectadoTabela = $this->Mongo->$bd->$table;
+//        $conectadoTabela = $this->Mongo->$bd->$table;
         //var_dump(  $conectadoTabela );exit;
         $filter = array( "_id" =>  new MongoDB\BSON\ObjectID( $args["idtorneio"] )     );
-        $options = array( 'upsert' => true, 'multi' => false ); //
-        $param =   array(  '$set' => $jsonRAW );
+//        $options = array( 'upsert' => true, 'multi' => false ); //
+//        $param =   array(  '$set' => $jsonRAW );
 
 
-        $resultMongo = $conectadoTabela->updateOne($filter, $param, $options) ;
+        $resultMongo = $this->con->MongoUpdateOne($filter, null, $jsonRAW) ;
 
         $data =   array(	"resultado" =>  "SUCESSO" );
         return $response->withJson($data, 200)->withHeader('Content-Type', 'application/json');
@@ -109,13 +113,13 @@ class Championship{
 
 
 
-        $bd = $this->Globais->Championship["Index"];
-        $table = $this->Globais->Championship["Type"]["campeonato"];
+//        $bd = $this->Globais->Championship["Index"];
+//        $table = $this->Globais->Championship["Type"]["campeonato"];
 
-        $conectadoTabela = $this->Mongo->$bd->$table;
+//        $conectadoTabela = $this->Mongo->$bd->$table;
         //var_dump(  $conectadoTabela );exit;
 
-        $resultMongo = $conectadoTabela->deleteOne   (
+        $resultMongo = $this->con->MongoDeleteOne   (
             array("_id" => new MongoDB\BSON\ObjectID( $args["idtorneio"] ) )
 
         );
@@ -188,12 +192,12 @@ class Championship{
 
 // salvando no MongoDB
 
-        $bd = $this->Globais->Championship["Index"];
-        $table = $this->Globais->Championship["Type"]["campeonato"];
+//        $bd = $this->Globais->Championship["Index"];
+//        $table = $this->Globais->Championship["Type"]["campeonato"];
 
-        $conectadoTabela = $this->Mongo->$bd->$table;
+//        $conectadoTabela = $this->Mongo->$bd->$table;
 
-        $resultMongo = $conectadoTabela->insertOne( $jsonRAW );
+        $resultMongo = $this->con->MongoInsertOne( $jsonRAW );
         //var_dump(  $resultMongo );exit;
 
         $idMongo = $resultMongo->getInsertedId();
@@ -304,29 +308,15 @@ class Championship{
         */
         $filtros=array();
         $params = array();
-        if (is_array($filtros)){
-            $params["index"] =  $this->Globais->Championship["Index"];
-            $params["type"] =  $this->Globais->Championship["Type"]["campeonato"];
-        }
+
         if ($args["idtorneio"]){
-            //$filtros["query"]["terms"]["_id"] = $jsonRAW["idtorneio"];
-            //$filtros["_source"] = false;
             $filtros["_id"]  =   new MongoDB\BSON\ObjectID( $args["idtorneio"] )  ;
         }
 
+        $resultMongo =  $this->con->MongoFind($filtros );
+//	$resultMongo =  iterator_to_array(  $resultMongo) ;
 
-
-
-//  MongoDB
-
-        $bd = $this->Globais->Championship["Index"];
-        $table = $this->Globais->Championship["Type"]["campeonato"];
-
-        $conectadoTabela = $this->Mongo->$bd->$table;
-//        var_dump(  $filtros );exit;
-
-        $resultMongo = $conectadoTabela->find( $filtros )  ;
-        $data["hits"] = iterator_to_array($resultMongo);
+        $data["hits"] = $resultMongo;
         $data["resultado"] = "SUCESSO";
 
         /*

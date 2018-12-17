@@ -1,20 +1,30 @@
 <?php
 namespace raiz;
 use MongoDB;
-set_time_limit( 2 );
+
+error_reporting(E_ALL ^ E_NOTICE);
+
 class Events{
     function __construct( ){
-        require("include/class_db.php");
-        /*
-        $this->con = new db();
-        $this->con->conecta();
-        */
 
-        $this->Mongo = new db();
-        $this->Mongo  = $this->Mongo->conecta("Mongo");
+        include "vendor/autoload.php";
 
         require_once("include/globais.php");
         $this->Globais = new Globais();
+
+        $this->con = new \babirondo\classbd\db();
+
+
+
+        $this->con->conecta($this->Globais->banco ,
+                              $this->Globais->localhost,
+                              $this->Globais->db,
+                              $this->Globais->username,
+                              $this->Globais->password,
+                              $this->Globais->port);
+
+        $this->con->MongoDB = $this->Globais->Championship["Index"];
+        $this->con->MongoTable = $this->Globais->Championship["Type"]["campeonato"];
     }
 
     function AlterarEvento(  $request, $response, $args,   $jsonRAW){
@@ -37,6 +47,8 @@ class Events{
                 ->withHeader('Content-type', 'application/json;charset=utf-8')
                 ->withJson($data);
         }
+
+	//TODO:  completa bagunca esse metodo alterar
 
         $jsonRAW["idevento"] = $args["idevento"];
         $args["idevento"] = null;
@@ -109,14 +121,14 @@ class Events{
         $options = array( 'upsert' => true, 'multi' => false ); //
         $param =   array(  '$set' =>   $novo_array );
 
-        $bd = $this->Globais->Championship["Index"];
-        $table = $this->Globais->Championship["Type"]["campeonato"];
+//        $bd = $this->Globais->Championship["Index"];
+//        $table = $this->Globais->Championship["Type"]["campeonato"];
 
-        $conectadoTabela = $this->Mongo->$bd->$table;
+//        $conectadoTabela = $this->Mongo->$bd->$table;
 
        // var_dump($jsonRAW_update);exit;
 
-        $resultMongo = $conectadoTabela->updateOne($filtros, $param, $options) ;
+        $resultMongo = $this->con->MongoUpdateOne($filtros, $param, $options) ;
 
         $data =   array(	"resultado" =>  "SUCESSO" );
         return $response->withJson($data, 200)->withHeader('Content-Type', 'application/json');
@@ -161,14 +173,14 @@ class Events{
             $filtros["_id"]  =   new MongoDB\BSON\ObjectID( $args["idtorneio"] )  ;
         }
 
-        $bd = $this->Globais->Championship["Index"];
-        $table = $this->Globais->Championship["Type"]["campeonato"];
+//        $bd = $this->Globais->Championship["Index"];
+//        $table = $this->Globais->Championship["Type"]["campeonato"];
 
-        $conectadoTabela = $this->Mongo->$bd->$table;
+//        $conectadoTabela = $this->Mongo->$bd->$table;
 
-        $resultMongo = $conectadoTabela->find( $filtros )  ;
-        $dados_ja_armazenados  = iterator_to_array($resultMongo)[0];
-        ini_set("xdebug.overload_var_dump", "off");
+        $resultMongo = $this->con->MongoFind( $filtros )  ;
+        $dados_ja_armazenados  = $resultMongo[0];
+//        ini_set("xdebug.overload_var_dump", "off");
 
 //XXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
@@ -181,14 +193,14 @@ class Events{
         //$dados_ja_armazenados["eventos"]["$etapaID"]["_id"] = $etapaID ;
 
         //var_dump( $dados_ja_armazenados["eventos"] );exit;
-        $conectadoTabela = $this->Mongo->$bd->$table;
+//        $conectadoTabela = $this->Mongo->$bd->$table;
 
         $filter = array( "_id" =>  new MongoDB\BSON\ObjectID( $args["idtorneio"] )     );
         $options = array( 'upsert' => true, 'multi' => false ); //
         $param =   array(  '$set' => $dados_ja_armazenados );
         $mensagem = "ID evento criado ".$etapaID;
 
-        $resultMongo = $conectadoTabela->updateOne($filter, $param, $options) ;
+        $resultMongo = $this->con->MongoUpdateOne($filter, $param, $options) ;
 
 
         $data =   array(	"resultado" =>  "SUCESSO" );
@@ -197,28 +209,6 @@ class Events{
 
 
 
-        $sql = "INSERT INTO events (idchampionship, event, sigla)
-                VALUES('".$args['idtorneio']."','".$jsonRAW['evento']."',  '".$jsonRAW["sigla"]."')";
-        $this->con->executa($sql);
-
-        if ( $this->con->res == 1 ){
-
-            $data =   array(	"resultado" =>  "SUCESSO" );
-            return $response->withJson($data, 200)->withHeader('Content-Type', 'application/json');
-        }
-        else {
-
-            // nao encontrado
-            $data =    array(	"resultado" =>  "ERRO",
-                "erro" => "Impossible to create new event - $mensagem_retorno");
-
-            return $response->withStatus(200)
-                ->withHeader('Content-type', 'application/json;charset=utf-8')
-                ->withJson($data);
-
-
-
-        }
 
     }
 
@@ -246,28 +236,25 @@ class Events{
             $filtros["eventos._id"]  =     new MongoDB\BSON\ObjectID( $jsonRAW["idevento"] )  ;//
         }
 
-        ini_set("xdebug.overload_var_dump", "off");
+//        ini_set("xdebug.overload_var_dump", "off");
 
-        $bd = $this->Globais->Championship["Index"];
-        $table = $this->Globais->Championship["Type"]["campeonato"];
+        //$bd = $this->Globais->Championship["Index"];
+      //  $table = $this->Globais->Championship["Type"]["campeonato"];
 
-        $conectadoTabela = $this->Mongo->$bd->$table;
+    //    $conectadoTabela = $this->Mongo->$bd->$table;
 
-        $ops = $filtros;
+  //      $ops = $filtros;
 
         //var_dump($ops);var_dump($params);exit;
-        $resultMongo = $conectadoTabela->find($ops , $params )  ; //$params
+//        $resultMongo = $conectadoTabela->find($ops , $params )  ; //$params
+	$resultMongo = $this->con->MongoFind($filtros, $params);
 
-        $dados_ja_armazenados = $resultMongo->toArray()[0] ;
+        $dados_ja_armazenados = $resultMongo[0] ;
         //var_dump($dados_ja_armazenados);var_dump($ops);var_dump($params);exit;
 
-        if (($dados_ja_armazenados) != false){
-        //    var_dump($dados_ja_armazenados);var_dump($ops);var_dump($params);exit;
-            return $dados_ja_armazenados;
-        }
-        else
-            return false;
 
+        //    var_dump($dados_ja_armazenados);var_dump($ops);var_dump($params);exit;
+	return $dados_ja_armazenados;
     }
 
 
@@ -296,17 +283,17 @@ class Events{
         }
         $options['$pull'] =  $where;
 
-        $bd = $this->Globais->Championship["Index"];
-        $table = $this->Globais->Championship["Type"]["campeonato"];
+//        $bd = $this->Globais->Championship["Index"];
+//        $table = $this->Globais->Championship["Type"]["campeonato"];
 
-        $conectadoTabela = $this->Mongo->$bd->$table;
+//        $conectadoTabela = $this->Mongo->$bd->$table;
 
         if ($args["idevento"]){
             //$options["projection"]['eventos.$']  =  true;//
         }
 
         //var_dump($filtros);var_dump($options);
-        $resultMongo = $conectadoTabela->updateOne ( $filtros,  $options ) ;
+        $resultMongo = $this->con->MongoUpdateOne ( $filtros, $options ) ;
         //var_dump($resultMongo);exit;
 
         $data =   array(	"resultado" =>  "SUCESSO" );

@@ -1,6 +1,4 @@
 <?php
-
-
 namespace raiz;
 use PDO,MongoDB;
 error_reporting(E_ALL ^ E_DEPRECATED ^E_NOTICE);
@@ -10,11 +8,8 @@ class db
     {
         require_once("include/globais.php");
         set_time_limit( 15 );
-
         $this->globais = new Globais();
         //	echo "\n Conectando no banco: ".$this->globais->banco ;
-
-
         switch ($bd){
             case("Postgres"):
                 try {
@@ -32,22 +27,14 @@ class db
                 }
                 $this->conectado = true;
             break;
-
             case("Mongo"):
-
                 $this->mongo = new MongoDB\Client("mongodb://localhost:27017");
-
                 $this->conectado = true;
-
                 return $this->mongo;
                 break;
         }
-
-
-
         return true;
     }
-
     function executa($sql, $prepared=0, $l=__LINE__, $debug=null)
     {
         $this->dados = null;
