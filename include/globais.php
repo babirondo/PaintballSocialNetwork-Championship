@@ -21,7 +21,7 @@ class Globais{
         $servidor["campeonato"] = "http://192.168.0.150:84";
         $servidor["players"] = "http://192.168.0.150:83";
 
-        $servidor["bancodados_campeonato"] = "192.168.0.150";
+        $servidor["bancodados_campeonato"] = "localhost";
         $servidor["bancodados_players"] = "192.168.0.150";
 
         $this->verbose=1;
@@ -32,7 +32,7 @@ class Globais{
                 $this->banco = "Mongo";
                 $this->localhost = $servidor["bancodados_campeonato"];
                 $this->username = "postgres";
-                $this->port = "27017";
+                $this->port = 27017;
                 $this->password = "postgres";
                 $this->db ="championship_local";
             break;
