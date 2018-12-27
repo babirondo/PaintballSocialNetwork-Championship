@@ -235,26 +235,10 @@ class Events{
         if ($jsonRAW["idevento"]){
             $filtros["eventos._id"]  =     new MongoDB\BSON\ObjectID( $jsonRAW["idevento"] )  ;//
         }
+	      $dados_ja_armazenados = $this->con->MongoFind($filtros, $params);
+        //$dados_ja_armazenados = $resultMongo[0] ;
 
-//        ini_set("xdebug.overload_var_dump", "off");
-
-        //$bd = $this->Globais->Championship["Index"];
-      //  $table = $this->Globais->Championship["Type"]["campeonato"];
-
-    //    $conectadoTabela = $this->Mongo->$bd->$table;
-
-  //      $ops = $filtros;
-
-        //var_dump($ops);var_dump($params);exit;
-//        $resultMongo = $conectadoTabela->find($ops , $params )  ; //$params
-	$resultMongo = $this->con->MongoFind($filtros, $params);
-
-        $dados_ja_armazenados = $resultMongo[0] ;
-        //var_dump($dados_ja_armazenados);var_dump($ops);var_dump($params);exit;
-
-
-        //    var_dump($dados_ja_armazenados);var_dump($ops);var_dump($params);exit;
-	return $dados_ja_armazenados;
+	      return $dados_ja_armazenados;
     }
 
 
@@ -313,11 +297,34 @@ class Events{
         }
         */
 
-        $dados_ja_armazenados = $this->getEvents( $request, $response, $args , $jsonRAW );
-        //var_dump($data);exit;
+        $dados_ja_armazenados["hits"] = $this->getEvents( $request, $response, $args , $jsonRAW );
+        $torneios = array();
+        $eventos = array();
+
+
+        foreach ($dados_ja_armazenados["hits"] as $idretorno => $retorno){
+            foreach ($retorno["eventos"] as $idretorno2 => $retorno2){
+
+              $chave =  $retorno2['_id'];
+              $eventos[ "$chave"]  =  $retorno2;
+              $eventos[ "$chave"]["idcampeonato"]  =  $retorno['_id'];
+              $eventos[ "$chave"]['combo']  =  $retorno["championship"]. " - ".$retorno2["evento"];
+            }
+        }
+
+
+        foreach ($dados_ja_armazenados["hits"] as $idretorno => $retorno){
+              $chave =  $retorno['_id'];
+              $torneios[ "$chave"]  =  $retorno;
+              $torneios[ "$chave"]['_id']  =  $chave;
+        }
+
 
         if ( ($dados_ja_armazenados) != false){
             $dados_ja_armazenados = (array) $dados_ja_armazenados;
+
+            $dados_ja_armazenados["campeonatos"] = $torneios;
+            $dados_ja_armazenados["eventos"] = $eventos;
             $dados_ja_armazenados["resultado"] = "SUCESSO";
 
             return $response->withJson($dados_ja_armazenados, 200)->withHeader('Content-Type', 'application/json');
