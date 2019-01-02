@@ -50,7 +50,7 @@ class Globais{
         $this->Championship["Type"]["campeonato"] = "campeonatos";
         $this->Championship["Id"] = "id";
 
-
+        $this->healthcheck = $servidor["campeonato"]."/PaintballSocialNetwork-Championship/healthcheck/"; //UNIT TEST       
         $this->Campeonatos =                    $servidor["campeonato"]."/PaintballSocialNetwork-Championship/Tournaments/";
 
 
