@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="REST API Test Suite" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.024142">
+    <testsuite name="testPlayers" file="/var/www/html/PaintballSocialNetwork-Championship/tests/testCampeonatos.php" tests="1" assertions="1" errors="0" failures="0" skipped="0" time="0.024142">
+      <testcase name="testGet_HealthCheck" class="testPlayers" classname="testPlayers" file="/var/www/html/PaintballSocialNetwork-Championship/tests/testCampeonatos.php" line="27" assertions="1" time="0.024142"/>
+    </testsuite>
+  </testsuite>
+</testsuites>
