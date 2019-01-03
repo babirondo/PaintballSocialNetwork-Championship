@@ -53,10 +53,12 @@ class Championship{
         //var_dump(  $conectadoTabela );exit;
         $filter = array( "_id" =>  new MongoDB\BSON\ObjectID( $args["idtorneio"] )     );
 //        $options = array( 'upsert' => true, 'multi' => false ); //
-//        $param =   array(  '$set' => $jsonRAW );
+        $param =   array(  '$set' => $jsonRAW );
+
+        //var_dump($filter); var_dump($param); var_dump($jsonRAW);
 
 
-        $resultMongo = $this->con->MongoUpdateOne($filter, null, $jsonRAW) ;
+        $resultMongo = $this->con->MongoUpdateOne($filter, $param,  $jsonRAW) ;
 
         $data =   array(	"resultado" =>  "SUCESSO" );
         return $response->withJson($data, 200)->withHeader('Content-Type', 'application/json');
@@ -204,6 +206,7 @@ class Championship{
 
 
         $data["msg"] = "Inserted with Object ID '{$idMongo}'";
+        $data["idChampionship"] = "{$idMongo}";
 
         //var_dump($jsonRAW); exit;
 // salvando no elasticsearch

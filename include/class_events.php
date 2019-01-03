@@ -28,115 +28,93 @@ class Events{
     }
 
     function AlterarEvento(  $request, $response, $args,   $jsonRAW){
+          /*
+          if (!$this->con->conectado){
+              $data =   array(	"resultado" =>  "ERRO",
+                  "erro" => "nao conectado - ".$this->con->erro );
+              return $response->withStatus(500)
+                  ->withHeader('Content-type', 'application/json;charset=utf-8')
+                  ->withJson($data);
+          }
+          */
+          IF (!is_array ($jsonRAW)  ) {
+              $data =  array(	"resultado" =>  "ERRO",
+                  "erro" => "JSON zuado - ".var_export($jsonRAW, true) );
+              return $response->withStatus(500)
+                  ->withHeader('Content-type', 'application/json;charset=utf-8')
+                  ->withJson($data);
+          }
+  	//TODO:  completa bagunca esse metodo alterar
+/*
+          $jsonRAW["idevento"] = $args["idevento"];
+          $args["idevento"] = null;
+          $data = $this->getEvents( $request, $response, $args,   $jsonRAW );
+          $data =  json_decode(json_encode($data), true);
+          $novo_array=array();
 
-        /*
-        if (!$this->con->conectado){
-            $data =   array(	"resultado" =>  "ERRO",
-                "erro" => "nao conectado - ".$this->con->erro );
-            return $response->withStatus(500)
-                ->withHeader('Content-type', 'application/json;charset=utf-8')
-                ->withJson($data);
-        }
-        */
+          ini_set('xdebug.var_display_max_depth', '10');
+          ini_set('xdebug.var_display_max_children', '256');
+          ini_set('xdebug.var_display_max_data', '1024');
 
-        IF (!is_array ($jsonRAW)  ) {
-            $data =  array(	"resultado" =>  "ERRO",
-                "erro" => "JSON zuado - ".var_export($jsonRAW, true) );
+        //  var_dump($data);
+          //varre o result set para entender a posicao de cada championship e evento para entar alterar as chaves necessarias
+          foreach ($data as $idDocumento_temp => $championship){
+              $idDocumento = $championship["_id"]['$oid']; //para debug
+              $idDocumento = $idDocumento_temp;
 
-            return $response->withStatus(500)
-                ->withHeader('Content-type', 'application/json;charset=utf-8')
-                ->withJson($data);
-        }
+              $novo_array[$idDocumento] =     $championship  ;
 
-	//TODO:  completa bagunca esse metodo alterar
+              if (is_array($championship["eventos"])){
+                  $novo_array[$idDocumento]["eventos"] = null;
+                  foreach ($championship["eventos"] as $linhaEvento_temp => $evento) {
+                        $linhaEvento = $evento["_id"]['$oid']; //para debug
+                        $linhaEvento = $linhaEvento_temp;
 
-        $jsonRAW["idevento"] = $args["idevento"];
-        $args["idevento"] = null;
+                        $novo_array[$idDocumento]["eventos"][$linhaEvento] = $evento;
 
-        $data = $this->getEvents( $request, $response, $args,   $jsonRAW );
-        $data =  json_decode(json_encode($data), true);
-
-        //var_dump($data["eventos"]); exit;
-
-        foreach ($data as $linha => $eventos){
-
-            if ($linha == "_id")
-                $novo_array[$linha] =   ((array) new MongoDB\BSON\ObjectID( $eventos['$oid']  ))["oid"];
-
-            else
-                $novo_array[$linha] =     $eventos  ;
-
-            if (is_array($eventos)){
-
-                foreach ($eventos as $linhaEvento => $evento) {
-
-                    if (is_array($evento)){
-                        foreach ($evento as $idcampo => $campo) {
-
-
-
-                            if ($idcampo == "_id") {
-
-                             //   echo "-".$campo;
-                                //$novo_array[$linha][$linhaEvento][$idcampo] =  new MongoDB\BSON\ObjectID (  $campo['$oid'] );//
-                                $novo_array[$linha][$linhaEvento][$idcampo] =  new MongoDB\BSON\ObjectID (  $campo['$oid'] );//
-
-//                                if ($novo_array[$linha][$linhaEvento][$idcampo]['$oid'] == $jsonRAW["idevento"])
-                                if ($novo_array[$linha][$linhaEvento][$idcampo] == $jsonRAW["idevento"])
-                                    $idEvento = $linhaEvento;
-
-                            }
-                            else
-                                $novo_array[$linha][$linhaEvento][$idcampo] =  $campo  ;
+                        //  echo "<BR>".$evento["_id"]['$oid'] ." = ". $jsonRAW["idevento"];
+                        if ($evento["_id"]['$oid'] == $jsonRAW["idevento"]){
+                            $save_posicao_championship = $idDocumento;
+                            $save_posicao_evento = $linhaEvento;
                         }
-
-                    }
-
-                }
-            }
-        }
+                  }
+              }
+          }
 
 
-    //    $novo_array = $data;
-        $jsonRAW_bkp = $jsonRAW;
-        $jsonRAW["_id"] =  new MongoDB\BSON\ObjectID(  $jsonRAW["idevento"])        ;
-        unset($jsonRAW["idevento"]);
+          //alterando de fato
+          $novo_array[$save_posicao_championship]["eventos"][$save_posicao_evento]["evento"] = $jsonRAW["evento"];
+          */
 
-        $novo_array["eventos"][$idEvento] = $jsonRAW;
-
-        unset($novo_array["_id"]);
-
-        //var_dump($novo_array);exit;
-
-        $filtros=array();
-        $params = array();
-
-        if ($args["idtorneio"]){
-            $filtros['_id']  =  new MongoDB\BSON\ObjectID( $args["idtorneio"]  );//
-        }
-        if ($jsonRAW["idevento"]){
-            $filtros["eventos._id"]  =     new MongoDB\BSON\ObjectID( $jsonRAW_bkp["idevento"] )  ;//
-        }
-
-        $options = array( 'upsert' => true, 'multi' => false ); //
-        $param =   array(  '$set' =>   $novo_array );
-
-//        $bd = $this->Globais->Championship["Index"];
-//        $table = $this->Globais->Championship["Type"]["campeonato"];
-
-//        $conectadoTabela = $this->Mongo->$bd->$table;
-
-       // var_dump($jsonRAW_update);exit;
-
-        $resultMongo = $this->con->MongoUpdateOne($filtros, $param, $options) ;
-
-        $data =   array(	"resultado" =>  "SUCESSO" );
-        return $response->withJson($data, 200)->withHeader('Content-Type', 'application/json');
+          $novo_array_simples = array('eventos.$.evento' => $jsonRAW["evento"] );
+      //    var_dump($novo_array);
 
 
+  //        $options = array( 'upsert' => true, 'multi' => false ); //
+      //    $param =   array(  '$set' => $jsonRAW );
 
-    }
 
+          $filtros=array();
+          $params = array();
+          $options = array();
+
+          if ($args["idtorneio"]){
+              $filtros['_id']  =  new MongoDB\BSON\ObjectID( $args["idtorneio"]  );//
+          }
+          if ($jsonRAW["idevento"]){
+              $filtros["eventos._id"]  =     new MongoDB\BSON\ObjectID( $jsonRAW["idevento"] )  ;//
+          }
+          if ($args["idevento"]){
+              $filtros["eventos._id"]  =     new MongoDB\BSON\ObjectID( $args["idevento"] )  ;//
+          }
+          //$options = array( 'upsert' => true, 'multi' => false ); //
+          $param =   array(  '$set' =>   $novo_array_simples );
+
+      //    var_dump($filtros);var_dump($param);var_dump($options);
+          $resultMongo = $this->con->MongoUpdateOne($filtros, $param, $options) ;
+          $data =   array(	"resultado" =>  "SUCESSO" );
+          return $response->withJson($data, 200)->withHeader('Content-Type', 'application/json');
+      }
 
     function CriarEvento(  $request, $response, $args,   $jsonRAW){
         /*
@@ -205,6 +183,7 @@ class Events{
 
         $data =   array(	"resultado" =>  "SUCESSO" );
         $data["mensagem"] = $mensagem;
+        $data["idEvento"] = "{$etapaID}";
         return $response->withJson($data, 200)->withHeader('Content-Type', 'application/json');
 
 
@@ -298,18 +277,28 @@ class Events{
         */
 
         $dados_ja_armazenados["hits"] = $this->getEvents( $request, $response, $args , $jsonRAW );
+
         $torneios = array();
         $eventos = array();
 
+        ini_set('xdebug.var_display_max_depth', '10');
+        ini_set('xdebug.var_display_max_children', '256');
+        ini_set('xdebug.var_display_max_data', '1024');
 
-        foreach ($dados_ja_armazenados["hits"] as $idretorno => $retorno){
-            foreach ($retorno["eventos"] as $idretorno2 => $retorno2){
+//var_dump($dados_ja_armazenados);
 
-              $chave =  $retorno2['_id'];
-              $eventos[ "$chave"]  =  $retorno2;
-              $eventos[ "$chave"]["idcampeonato"]  =  $retorno['_id'];
-              $eventos[ "$chave"]['combo']  =  $retorno["championship"]. " - ".$retorno2["evento"];
-            }
+        foreach (  $dados_ja_armazenados["hits"]   as $idretorno => $retorno){
+
+           if ($retorno['eventos'] ){
+             foreach ( iterator_to_array($retorno['eventos'])  as $idretorno2 => $retorno2){
+
+               $chave =  $retorno2['_id'];
+               $eventos[ "$chave"]  =  $retorno2;
+               $eventos[ "$chave"]["idcampeonato"]  =  $retorno['_id'];
+               $eventos[ "$chave"]['combo']  =  $retorno["championship"]. " - ".$retorno2["evento"];
+             }
+
+           }
         }
 
 
